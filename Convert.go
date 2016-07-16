@@ -18,29 +18,32 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		r.ParseMultipartForm(32 << 20)
 		file, _, err := r.FormFile("file")
 		if (err != nil){
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("error"))
+			writeError(w)
 			return
 		}
 		defer file.Close()
+
 		bytes, err := ioutil.ReadAll(file)
 		if (err != nil) {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("error"))
+			writeError(w)
 			return
 		}
+
 		res, err := convert(bytes);
 		if (err != nil) {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("error"))
+			writeError(w)
 			return
 		}
-		fmt.Println(len(bytes))
-		fmt.Println(len(res))
+
 		w.Header().Set("Content-Disposition", "attachment; filename=result.mp4")
 		w.Header().Set("Content-Type", "video/mp4")
 		w.Write(res)
 	}
+}
+
+func writeError(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusInternalServerError)
+	w.Write([]byte("error"))
 }
 
 func main() {
