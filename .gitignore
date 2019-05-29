@@ -25,4 +25,5 @@ _testmain.go
 *.iml
 .idea
 convert
+main
 
